@@ -1,0 +1,85 @@
+# SOC Analyst Lab Portfolio
+**Track**: Tier 1 SOC / Network Troubleshooting  
+**Labs Completed**: 5/5 | **Quiz Score**: 4/6  
+**Tools**: PowerShell, ipconfig, ping, netstat, Get-NetAdapter  
+**Date**: June 2026
+
+---
+
+### Lab 1: ipconfig - IP Configuration Basics
+**Objective**: Retrieve host IP details for documentation  
+**Steps I Followed**:
+1. Ran `ipconfig` in Windows terminal to get IPv4, Subnet Mask, Default Gateway
+2. Recorded: IP 192.168.1.105, Subnet 255.255.255.0, Gateway 192.168.1.1
+3. Verified info in lab form and submitted
+4. Reviewed `ipconfig /all` for MAC, DHCP, DNS details
+
+**Screenshot**: ![Lab1-ipconfig](screenshots/lab1_ipconfig.png)  
+**Key Learning**: SOC L1 tickets must include IP/Subnet/Gateway. No IP = no network.  
+**SOC Relevance**: First data point in every connectivity ticket
+
+---
+
+### Lab 2: Adapters - Get-NetAdapter  
+**Objective**: Verify physical/link layer connectivity  
+**Steps I Followed**:
+1. Ran `PS C:\> Get-NetAdapter` to list all NICs
+2. Checked "Status" column: Ethernet = Up 1Gbps, Wi-Fi = Up 433Mbps 
+3. Confirmed adapters were "Up" before testing higher layers
+4. Noted: "Disconnected" = cable unplugged or Wi-Fi off
+
+**Screenshot**: ![Lab2-Adapters](screenshots/lab2_adapters.png)  
+**Key Learning**: Always check Layer 1 first. If adapter is Down, OSI troubleshooting stops there.  
+**SOC Relevance**: Prevents wasted time on DNS/IP fixes when cable is unplugged
+
+---
+
+### Lab 3: IP Builder - Private vs Public IPs
+**Objective**: Classify IP addresses by Class and type  
+**Steps I Followed**:
+1. Tested 10.0.0.5 → Class A, Private RFC1918
+2. Tested 172.20.5.1 → Class B, Private RFC1918 172.16.0.0/12 range
+3. Tested 192.168.0.100 → Class C, Private RFC1918 192.168.0.0/16 range
+4. Learned: Private IPs are non-routable on internet, used for LAN
+
+**Screenshot**: ![Lab3-IPBuilder](screenshots/lab3_ipbuilder.png)  
+**Key Learning**: SOC analysts must spot private IPs in logs. Public traffic with 192.168.x = NAT misconfig.  
+**SOC Relevance**: Critical for log analysis and firewall rule review
+
+---
+
+### Lab 4: Ping & Netstat - Connectivity + Connections
+**Objective**: Test reachability + analyze active connections  
+**Steps I Followed**:
+1. Ran `netstat -an` to list all sockets
+2. Interpreted states: LISTENING = waiting for connections, ESTABLISHED = active session
+3. Found ESTABLISHED connections to 142.250.185.46:443 and 20.45.126.10:443 = normal HTTPS traffic
+4. Noted: Lab reminder "Look for unexpected foreign addresses" - C2 detection basics
+
+**Screenshot**: ![Lab4-Netstat](screenshots/lab4_netstat.png)  
+**Key Learning**: `netstat` shows what’s talking on the host. ESTABLISHED to unknown IP = investigate.  
+**SOC Relevance**: Core command for host-based IOC hunting
+
+---
+
+### Lab 5: Real-World Troubleshooting Scenario  
+**Incident**: User reports "I can't access the internet. Everything was working this morning."  
+**Role**: Junior Cybersecurity Analyst  
+**Steps I Followed - OSI Method**:
+1. **Get-NetAdapter**: Verified Ethernet/Wi-Fi = UP. Physical layer OK
+2. **ipconfig**: Confirmed IP 192.168.1.105 assigned. DHCP working
+3. **Ping Gateway 192.168.1.1**: Request timed out = LAN connectivity problem
+4. **Ping 8.8.8.8**: Request timed out - internet unreachable, expected since gateway down
+5. **Ping google.com**: "Could not find host" - DNS failing, expected with no internet
+6. **netstat -an**: No established external connections. Confirms no internet traffic
+
+**Screenshot**: ![Lab5-Scenario](screenshots/lab5_scenario.png)  
+**Root Cause Analysis**: Gateway 192.168.1.1 not responding. Issue is local router/modem, not DNS or ISP.  
+**Key Learning**: Follow OSI bottom-up: Adapter → IP → Gateway → Internet → DNS → Security. Don’t skip steps.  
+**SOC Relevance**: Exact workflow used in Tier 1 SOC for "no internet" tickets
+
+---
+
+### Assessment
+**Final Score**: 4/6  
+**Sample Question**: "Which command shows IP, subnet, gateway?" Answer: `ipconfig` - Option C
