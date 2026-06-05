@@ -1,2 +1,2 @@
-## Labs & Reports
-- **PowerShell Forensic Report** - Windows event log analysis, persistence detection
+## Labs & Reports:
+Each Topic has it's readme and report. Open both. 
